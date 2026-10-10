@@ -1,0 +1,10 @@
+{"timestamp":"2026-10-10T09:00:00.000Z","run_id":"review-104","event":"run.started","agent":"reviewer","model":"example-model-small","status":"running"}
+{"timestamp":"2026-10-10T09:00:00.120Z","run_id":"review-104","event":"tool.call","agent":"reviewer","model":"example-model-small","tool":"read_file","status":"success","duration_ms":44,"input_tokens":130,"output_tokens":18}
+{"timestamp":"2026-10-10T09:00:01.200Z","run_id":"review-104","event":"tool.call","agent":"reviewer","tool":"run_tests","status":"success","duration_ms":970,"tokens":245}
+{"timestamp":"2026-10-10T09:00:03.500Z","run_id":"review-104","event":"tool.call","agent":"reviewer","tool":"inspect_diff","status":"error","duration_ms":2250,"tokens":304,"message":"Sample failure: patch context was stale."}
+{"timestamp":"2026-10-10T09:00:04.100Z","run_id":"review-104","event":"agent.retry","agent":"reviewer","model":"example-model-small","status":"warning","duration_ms":600,"input_tokens":620,"output_tokens":95,"cost_usd":0.0008}
+{"timestamp":"2026-10-10T09:00:06.000Z","run_id":"review-104","event":"run.completed","agent":"reviewer","model":"example-model-small","status":"success","duration_ms":6000,"input_tokens":1020,"output_tokens":210,"cost_usd":0.0015}
+{"timestamp":"2026-10-10T09:12:00.000Z","run_id":"fix-28","event":"run.started","agent":"implementer","model":"example-model-medium","status":"running"}
+{"timestamp":"2026-10-10T09:12:00.300Z","run_id":"fix-28","event":"tool.call","agent":"implementer","tool":"edit_file","status":"success","duration_ms":160,"tokens":180}
+{"timestamp":"2026-10-10T09:12:02.900Z","run_id":"fix-28","event":"tool.call","agent":"implementer","tool":"run_tests","status":"success","duration_ms":2460,"tokens":330}
+{"timestamp":"2026-10-10T09:12:05.000Z","run_id":"fix-28","event":"run.completed","agent":"implementer","model":"example-model-medium","status":"success","duration_ms":5000,"input_tokens":870,"output_tokens":255,"cost_usd":0.0021}

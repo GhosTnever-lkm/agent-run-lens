@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Inspect local AI agent run events from JSONL. Compare runs, find failed tools, review latency and token totals, and export a report.">
+  <meta name="theme-color" content="#10151d"><title>Agent Run Lens — local trace explorer</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar"><a class="brand" href="./"><span class="brand-mark">◉</span> Agent Run Lens</a><span class="privacy"><i></i> LOCAL · PRIVATE</span></header>
+    <section class="hero">
+      <div><p class="eyebrow">TRACE EXPLORER / JSONL</p><h1>See what your agent<br><em>actually did.</em></h1><p class="intro">Load an event log. Trace tool calls, failures, latency, and token use across runs — right here in your browser.</p></div>
+      <div class="hero-art" aria-hidden="true"><div class="orbit o1"></div><div class="orbit o2"></div><div class="pulse">⌁</div><span>RUN</span><span class="art-tag">EVENT → TRACE</span></div>
+    </section>
+    <section id="dropzone" class="dropzone"><input id="fileInput" type="file" accept=".jsonl,.ndjson,text/plain,application/jsonl"><div class="upload-icon">↑</div><div><strong>Drop a JSONL file here</strong><span>Up to 25 MiB · processed locally, never uploaded</span></div><label class="button primary" for="fileInput">Choose file</label><button id="sampleButton" class="button quiet">Load sample</button></section>
+    <div class="toolbar"><div class="source"><span class="source-dot"></span><span id="sourceLabel">No file loaded</span></div><div class="toolbar-actions"><button id="exportCsv" class="button quiet">Export CSV</button><button id="exportMd" class="button quiet">Export report</button><button id="clearButton" class="button quiet">Clear</button></div></div>
+    <section class="metrics" aria-label="Run summary">
+      <article><span>EVENTS</span><strong id="metricEvents">0</strong></article><article><span>RUNS</span><strong id="metricRuns">0</strong></article><article class="warn"><span>ERRORS / TIMEOUTS</span><strong id="metricErrors">0</strong></article><article><span>TOKENS</span><strong id="metricTokens">—</strong></article><article><span>REPORTED COST</span><strong id="metricCost">—</strong></article>
+    </section>
+    <p id="parseErrors" class="parse-errors" hidden></p>
+    <section id="runComparison" class="events-card comparison" hidden><div class="section-head"><div><p class="eyebrow">SIDE-BY-SIDE SUMMARY</p><h2>Run comparison</h2></div><span id="runCount" class="count"></span></div><div class="table-wrap"><table><thead><tr><th>RUN ID</th><th>AGENT · MODEL</th><th>EVENTS</th><th>ERRORS</th><th>TIME WINDOW</th><th>TOKENS</th><th>REPORTED COST</th></tr></thead><tbody id="runRows"></tbody></table></div></section>
+    <section class="events-card"><div class="section-head"><div><p class="eyebrow">EVENT STREAM</p><h2>Run activity</h2></div><span id="eventCount" class="count">0 shown</span></div>
+      <div class="filters"><input id="search" type="search" placeholder="Search run, agent, tool, event…" aria-label="Search events"><select id="statusFilter" aria-label="Filter by status"><option value="all">All statuses</option><option value="error">Error</option><option value="failed">Failed</option><option value="timeout">Timeout</option><option value="warning">Warning</option><option value="success">Success</option><option value="running">Running</option><option value="info">Info</option></select></div>
+      <div id="emptyState" class="empty"><span>⌁</span><strong>No trace loaded yet</strong><p>Load the sample to explore the interface, or choose a JSONL event file.</p></div>
+      <div id="tableWrap" class="table-wrap" hidden><table><thead><tr><th>TIME</th><th>RUN ID</th><th>EVENT</th><th>ACTOR</th><th>STATUS</th><th>DURATION</th><th>TOKENS</th></tr></thead><tbody id="eventRows"></tbody></table></div>
+    </section>
+    <footer><span>Agent Run Lens v1.0.0</span><span>No account · No external requests · No telemetry</span><a href="https://github.com/GhosTnever-lkm/agent-run-lens">Source & docs ↗</a></footer>
+  </main>
+  <dialog id="detailDialog"><div class="dialog-head"><h2 id="detailTitle">Event details</h2><button id="closeDetail" class="button quiet">Close</button></div><dl id="detailList"></dl><details><summary>Raw JSON</summary><pre id="rawJson"></pre></details></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
