@@ -66,7 +66,13 @@ function clean(value) {
 
 export function summarize(events) {
   const durationValues = events.map((e) => e.durationMs).filter(Number.isFinite);
-  const span = events.length > 1 ? Math.max(...events.map((e) => e.epoch)) - Math.min(...events.map((e) => e.epoch)) : 0;
+  let earliestEpoch = Infinity;
+  let latestEpoch = -Infinity;
+  for (const event of events) {
+    if (event.epoch < earliestEpoch) earliestEpoch = event.epoch;
+    if (event.epoch > latestEpoch) latestEpoch = event.epoch;
+  }
+  const span = events.length > 1 ? latestEpoch - earliestEpoch : 0;
   const errorCount = events.filter((e) => ["error", "failed", "timeout"].includes(e.status)).length;
   return {
     events: events.length,
@@ -91,17 +97,22 @@ export function summarizeRuns(events) {
     groups.get(key).push(event);
   }
   return [...groups].map(([runId, rows]) => {
-    const times = rows.map((event) => event.epoch);
+    let firstEpoch = Infinity;
+    let lastEpoch = -Infinity;
+    for (const event of rows) {
+      if (event.epoch < firstEpoch) firstEpoch = event.epoch;
+      if (event.epoch > lastEpoch) lastEpoch = event.epoch;
+    }
     return {
       runId,
       events: rows.length,
       errors: rows.filter((event) => ["error", "failed", "timeout"].includes(event.status)).length,
-      elapsedMs: Math.max(...times) - Math.min(...times),
+      elapsedMs: lastEpoch - firstEpoch,
       tokens: sum(rows, "tokens"),
       costUsd: sum(rows, "costUsd"),
       agents: [...new Set(rows.map((event) => event.agent).filter(Boolean))].join(", "),
       models: [...new Set(rows.map((event) => event.model).filter(Boolean))].join(", "),
-      firstEpoch: Math.min(...times)
+      firstEpoch
     };
   }).sort((a, b) => a.firstEpoch - b.firstEpoch);
 }
