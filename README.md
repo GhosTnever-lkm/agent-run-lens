@@ -8,7 +8,7 @@ Open the [live app](https://ghostnever-lkm.github.io/agent-run-lens/) or run `np
 
 ![Agent Run Lens showing a local trace and per-run comparison](assets/agent-run-lens-preview.png)
 
-Click **Load sample** to inspect a synthetic trace, or drop a `.jsonl` / `.ndjson` file. Files are limited to 25 MiB. Parsing happens in the current tab; the app has no account, analytics, upload endpoint, or external runtime dependency. Clear the session to release the parsed data from the page. The source and example are available in this repository.
+Click **Load sample** to inspect a synthetic trace, or drop a `.jsonl` / `.ndjson` file. Files are limited to 25 MiB. If another source is selected before a previous read finishes, the newest selection takes precedence. Parsing happens in the current tab; the app has no account, analytics, upload endpoint, or external runtime dependency. Clear the session to release the parsed data from the page. The source and example are available in this repository.
 
 ## Event format
 

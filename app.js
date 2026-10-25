@@ -1,34 +1,51 @@
 import { filterEvents, parseNdjson, summarize, summarizeRuns, toCsv, toMarkdown } from "./core.js";
+import { createLatestTextLoader } from "./text-load.js";
 
 const $ = (selector) => document.querySelector(selector);
 const state = { events: [], errors: [], source: "" };
 const fileInput = $("#fileInput");
 const dropzone = $("#dropzone");
+const textLoader = createLatestTextLoader(
+  (text, filename) => loadText(text, filename),
+  () => notify("Could not read that file.", true),
+);
 
-fileInput.addEventListener("change", async () => {
+fileInput.addEventListener("change", () => {
   const file = fileInput.files?.[0];
   if (!file) return;
-  if (file.size > 25 * 1024 * 1024) return notify("File is over the 25 MiB limit.", true);
-  try { loadText(await file.text(), file.name); }
-  catch { notify("Could not read that file.", true); }
   fileInput.value = "";
+  loadFile(file);
 });
 
 for (const eventName of ["dragenter", "dragover"]) dropzone.addEventListener(eventName, (event) => { event.preventDefault(); dropzone.classList.add("dragging"); });
 for (const eventName of ["dragleave", "drop"]) dropzone.addEventListener(eventName, (event) => { event.preventDefault(); dropzone.classList.remove("dragging"); });
-dropzone.addEventListener("drop", async (event) => {
+dropzone.addEventListener("drop", (event) => {
   const file = event.dataTransfer.files?.[0];
   if (!file) return;
-  if (file.size > 25 * 1024 * 1024) return notify("File is over the 25 MiB limit.", true);
-  loadText(await file.text(), file.name);
+  loadFile(file);
 });
 
-$("#sampleButton").addEventListener("click", async () => loadText(await (await fetch("./sample-run.jsonl")).text(), "sample-run.jsonl"));
+$("#sampleButton").addEventListener("click", () => {
+  void textLoader.load(async () => {
+    const response = await fetch("./sample-run.jsonl");
+    if (!response.ok) throw new Error(`Sample request failed: ${response.status}`);
+    return response.text();
+  }, "sample-run.jsonl");
+});
 $("#search").addEventListener("input", render);
 $("#statusFilter").addEventListener("change", render);
 $("#exportCsv").addEventListener("click", () => download("agent-run-lens.csv", toCsv(visibleEvents()), "text/csv;charset=utf-8"));
 $("#exportMd").addEventListener("click", () => download("agent-run-lens-report.md", toMarkdown(visibleEvents()), "text/markdown;charset=utf-8"));
-$("#clearButton").addEventListener("click", () => { state.events = []; state.errors = []; state.source = ""; render(); notify("Session cleared from memory."); });
+$("#clearButton").addEventListener("click", () => { textLoader.invalidate(); state.events = []; state.errors = []; state.source = ""; render(); notify("Session cleared from memory."); });
+
+function loadFile(file) {
+  if (file.size > 25 * 1024 * 1024) {
+    textLoader.invalidate();
+    notify("File is over the 25 MiB limit.", true);
+    return;
+  }
+  void textLoader.load(() => file.text(), file.name);
+}
 
 function loadText(text, filename) {
   const result = parseNdjson(text);

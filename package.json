@@ -1,8 +1,8 @@
 {
   "name": "agent-run-lens",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
-  "scripts": {"start": "node dev-server.mjs", "test": "node --test", "check": "node --check app.js && node --check core.js && node --check dev-server.mjs"},
+  "scripts": {"start": "node dev-server.mjs", "test": "node --test", "check": "node --check app.js && node --check core.js && node --check text-load.js && node --check dev-server.mjs"},
   "engines": {"node": ">=20"}
 }
